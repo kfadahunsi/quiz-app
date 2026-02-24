@@ -1,9 +1,13 @@
+import Header from "./components/Header";
+import Stage from "./components/Stage";
+
 export function App() {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="font-medium">Hello World</div>
-    </div>
-  )
+    return(
+        <div className="flex flex-col w-screen h-screen">
+            <Header/>
+            <Stage/>
+        </div>
+    )
 }
 
-export default App
+export default App;
