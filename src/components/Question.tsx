@@ -7,19 +7,19 @@ const questionList = [
         number: 1,
         question: "what is my favourite drink?",
         options: ["don julio", "hennessey", "captain morgan", "belvedere"],
-        answer: "captain morgan",
+        answer: 2,
     },
     {
         number: 2,
         question: "who is my favourite artist?",
         options: ["travis scott", "young thug", "future", "lil wayne"],
-        answer: "lil wayne",
+        answer: 3,
     },
     {
         number: 3,
         question: "what is my favourite food",
         options: ["pounded yam","pancakes", "pork chops", "suya",],
-        answer: "pancakes",
+        answer: 1,
     }
 ]
 
@@ -32,7 +32,7 @@ const colourClasses = {
 type Colour = "wrong" | "correct" | "primary"
 
 
-export default function Question() {
+export default function Question({setBegun}: {setBegun: React.Dispatch<React.SetStateAction<boolean>>}) {
 
     const [index, setIndex] = useState(0)
     const [answer, setAnswer] =useState("")
@@ -40,7 +40,7 @@ export default function Question() {
     const [completed, setCompleted] = useState(false)
     const [tally, setTally] = useState(0)
     const [colour, setColour] = useState<Colour>("primary")
-    const [ansIndex, setAnsIndex] = useState(-1)
+    const [chosenAns, setChosenAns] = useState<number|null>(null)
 
     const currentQuestion =  index
     const maxIndex = index === questionList.length -1
@@ -58,24 +58,28 @@ export default function Question() {
         }
         setSelected(true)
         setAnswer(answer)
-        if(answer === questionList[currentQuestion].answer){
+        setChosenAns(i)
+
+        if(i === questionList[currentQuestion].answer){
             setTally((prev)=>(prev+1))
             setColour("correct")
-            setAnsIndex(i)
         }else{
-            setAnsIndex(i)
             setColour("wrong")
         }
-        //console.log("this was the selected answer:", answer)
-
     }
 
     function handleFinish(){
         setCompleted(true)
-/*         setAnswer("")
-        setSelected(false)
-        setIndex(0) */
+    }
 
+    function handleReset(){
+        setAnswer("")
+        setSelected(false)
+        setIndex(0)
+        setBegun(false)
+        setTally(0)
+        setCompleted(false)
+        setColour("primary")
     }
 
   return (
@@ -88,7 +92,7 @@ export default function Question() {
                 <h2 className="text-center">{questionList[currentQuestion].question}</h2>
             </CardHeader>
             <CardAction className="flex flex-col gap-1 items-center w-full">
-                {questionList[currentQuestion].options.map((answer, i)=> (<Button className={i === ansIndex ? colourClasses[colour] : colourClasses["primary"]} key={i} onClick={()=>(handleAnswer(answer, i))}>{answer}</Button>))}  
+                {questionList[currentQuestion].options.map((answer, i)=> (<Button className={selected && i === questionList[currentQuestion].answer ? colourClasses["correct"] : selected && i === chosenAns && i !== questionList[currentQuestion].answer ? colourClasses["wrong"] : colourClasses["primary"]} key={i} onClick={()=>(handleAnswer(answer, i))}>{answer}</Button>))}  
             </CardAction>
             <CardAction className=" w-full flex justify-end">
                 {showNext && <Button className="bg-blue-400 mr-5" onClick={handleNext}>Next</Button>}
@@ -102,7 +106,7 @@ export default function Question() {
             <CardContent className="flex flex-col items-center">
                 <p className="text-center">FINAL SCORE: {tally}/{questionList.length}</p>
                 <img className="h-40" src="/confetti-montego.gif" alt="confetti" />
-                {completed && <Button className="mt-5">Return home</Button>}
+                {completed && <Button className="mt-5" onClick={handleReset}>Return home</Button>}
             </CardContent>
         </Card>
     }
